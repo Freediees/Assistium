@@ -29,10 +29,12 @@ class Search extends Component {
 
   constructor(props) {
     super(props);
+    const { params } = this.props.navigation.state;
+    console.log(params.url);
 
     this.state = {
-      dataSearch:[],
-      showLoader:false,
+      dataSearch:null,
+      showLoader:true,
       showLoaderLoad:false,
       showData:20,
       page:0,
@@ -43,6 +45,43 @@ class Search extends Component {
     };
   }
 
+  componentWillMount(){
+    const { params } = this.props.navigation.state;
+    const {compdep_id, token} = this.props;
+    axios.get(`${params.url}`,{
+      headers: { 'x-Authorization': `bearer ${token}` }
+    })
+    .then((res) => {
+      const status = res.data.status;
+      if(status === 'failed'){
+        const textSearch = res.data.message
+        this.setState({
+          showLoader:false,
+          textHasilSearch:textSearch,
+          dataSearch:null
+        })
+
+        console.log(res)
+      } else {
+        console.log(res)
+        const dataHasil  = res.data.data;
+        const textSearch = res.data.message;
+        this.setState({
+          showLoader:false,
+          dataSearch:this.state.page === 0 ? dataHasil : [...this.state.dataSearch, ...dataHasil],
+            // dataSearch:dataHasil,
+          textHasilSearch:textSearch,
+        })
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+      this.setState({
+        showLoader:false,
+        refreshing:false
+      })
+    });
+  }
   goBack(){
     this.props.navigation.goBack();
   }
@@ -187,11 +226,47 @@ class Search extends Component {
   // };
 
   renderHeader = () => {
-    return <View style={{margin:5}}><Text style={{color:'#e74c3c', textAlign:'center'}}>{this.state.textHasilSearch}</Text></View>
+    return <View style={{margin:5}}><Text style={{color:'#e74c3c', textAlign:'center'}}>{this.state.textHasilSearch || 'Data Tidak Ditemukan'}</Text></View>
   };
 
   renderDetail(data){
     this.props.navigation.navigate('Detail',{nik:`${data}`});
+  }
+
+  renderFlatlist(){
+    console.log(this.state.dataSearch);
+    if(this.state.dataSearch !== null){
+      console.log('masuk');
+      return(
+        <FlatList
+        data={this.state.dataSearch}
+        keyExtractor={item => item.nik}
+        renderItem={({ item }) => (
+
+
+          <Card style={{borderRadius: 5 }}>
+          <CardItem style={{borderRadius: 5 }} button onPress={() => this.renderDetail(item.nik)}>
+            <Left>
+              <Thumbnail large source={{uri: item.foto}} style={{marginRight: 10}}/>
+              <Body style={{ margin: 0, height: 70}}>
+                <Text>{item.nama} / {item.nik}</Text>
+                <Text note>{item.posisi}</Text>
+              </Body>
+            </Left>
+
+          </CardItem>
+          </Card>
+
+        )}
+        ListHeaderComponent={() => this.renderHeader()}
+
+        />
+      );
+    } else {
+      return <View style={{margin:5}}><Text style={{color:'#e74c3c', textAlign:'center'}}>{this.state.textHasilSearch}</Text></View>;
+    }
+
+
   }
 
   render() {
@@ -222,39 +297,7 @@ class Search extends Component {
         </Header>
 
         <View style={{padding:10}}>
-          {
-            this.state.showLoader
-              ?
-            <ActivityIndicator animating size="large" color={'#2c3e50'}/>
-              :
-            <FlatList
-              data={this.state.dataSearch}
-              keyExtractor={item => item.nik}
-              renderItem={({ item }) => (
-
-
-                <Card style={{borderRadius: 5 }}>
-                <CardItem style={{borderRadius: 5 }} button onPress={() => this.renderDetail(item.nik)}>
-                  <Left>
-                    <Thumbnail large source={{uri: item.foto}} style={{marginRight: 10}}/>
-                    <Body style={{ margin: 0, height: 70}}>
-                      <Text>{item.nama} / {item.nik}</Text>
-                      <Text note>{item.posisi}</Text>
-                    </Body>
-                  </Left>
-
-                </CardItem>
-                </Card>
-
-              )}
-              ListHeaderComponent={() => this.renderHeader()}
-              // ListFooterComponent={() => this.renderFooter()}
-              // refreshing={this.state.refreshing}
-              // onRefresh={() => this.handleRefresh()}
-              // onEndReached={() => this.handleLoadMore()}
-              // onEndReachedThreshold={50}
-            />
-          }
+          {this.renderFlatlist()}
         </View>
 
         <Fab

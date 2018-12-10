@@ -6,17 +6,19 @@ import { StackNavigator, DrawerNavigator } from "react-navigation";
 import ListNavigation   from './components/listNavigation';
 import LoginScreen      from '../screens/login_screens/login';
 import DashboardScreen  from '../screens/dashboard_screens/dashboard';
+import DashboardSearch  from '../screens/dashboard_screens/dashboardSearch';
 import ProfileScreen    from '../screens/dashboard_screens/profile_screens/profile';
 import SearchScreen     from '../screens/dashboard_screens/search_screens/search';
 import DetailScreen     from '../screens/dashboard_screens/detail_screens.js/detail';
 import FilterPageSearch from '../screens/dashboard_screens/search_screens/filterPage';
+import FilterSearch     from '../screens/dashboard_screens/search_screens/filterSearch';
 import FilterDashboard  from '../screens/dashboard_screens/filter_screens/filter';
 import DetailFilterDash from '../screens/dashboard_screens/filter_screens/detailFilter';
 import BandFilterScreen from '../screens/dashboard_screens/filter_screens/filterComponent/band';
 import DivisiFilterScreen from '../screens/dashboard_screens/filter_screens/filterComponent/divisi';
 import FuFilterScreen     from '../screens/dashboard_screens/filter_screens/filterComponent/functionUnit';
 import KELJTFilterScreen  from '../screens/dashboard_screens/filter_screens/filterComponent/KELJT';
-
+import AboutScreen from '../screens/dashboard_screens/about_screens/about';
 
 const noTransitionConfig = () => ({
   transitionSpec: {
@@ -31,68 +33,86 @@ const MainMenu = DrawerNavigator({
   Dashboard:{
     screen:DashboardScreen,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
+  },
+  DashboardSearch:{
+    screen:DashboardSearch,
+    navigationOptions: {
+      header:null,
+    },
   },
   Profile:{
     screen:ProfileScreen,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
+  },
+  About:{
+    screen:AboutScreen,
+    navigationOptions: {
+      header:null,
+    },
   },
   Search:{
     screen:SearchScreen,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
   },
   Detail:{
     screen:DetailScreen,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
   },
   FilterPageSearch:{
     screen:FilterPageSearch,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
+  },
+  FilterSearch:{
+    screen: FilterSearch,
+    navigationOptions: {
+      header:null,
+    },
   },
   FilterDashboard:{
     screen:FilterDashboard,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
   },
   DetailFilterDashboard:{
     screen:DetailFilterDash,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
   },
   BandFilter:{
     screen:BandFilterScreen,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
   },
   DivisiFilter:{
     screen:DivisiFilterScreen,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
   },
   FuFilter:{
     screen:FuFilterScreen,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
   },
   KELJTFilter:{
     screen:KELJTFilterScreen,
     navigationOptions: {
-      header:null,                  
-    }, 
+      header:null,
+    },
   },
 },{
   gesturesEnabled: false,

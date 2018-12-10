@@ -74,6 +74,9 @@ class Dashboard extends Component {
 
   componentWillMount(){
     const {compdep_id, token, nik_user} = this.props;
+    const { params } = this.props.navigation.state;
+
+    console.log(params.url);
     const begda = null;
     const endda = null;
     const expired = 1;
@@ -117,7 +120,7 @@ class Dashboard extends Component {
 
     this.props.dispatch({
       type:'BAR_DASHBOARD',
-      payload:axios.get(`${url.API}/profilekompetensi/${compdep_id}/${begda}/${endda}/${expired}/${jt}`,{
+      payload:axios.get(`${params.url}`,{
         headers: { 'x-Authorization': `bearer ${token}`}
       })
     })
@@ -179,6 +182,9 @@ class Dashboard extends Component {
   render() {
     console.log(this.state.dataSlider);
     const {navigation} = this.props;
+    const { params } = this.props.navigation.state;
+    console.log(params.urlKompetensi);
+    console.log(params.urlRekomendasi);
     return (
       <Container>
         {/* {
@@ -249,7 +255,7 @@ class Dashboard extends Component {
                   </View>
                   <CardItem style={{ flex: 6}}>
                     <Body style={{justifyContent:'center', alignItems:'flex-end'}}>
-                      <RekomendasiPieChart />
+                      <RekomendasiPieChart data={params.urlRekomendasi}/>
                     </Body>
                   </CardItem>
                   </View>

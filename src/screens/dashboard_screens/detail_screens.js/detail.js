@@ -72,7 +72,7 @@ class DetailFilter extends Component {
       const namaUser      = res.data.data[0].nama;
       const posisiUser    = res.data.data[0].posisi;
       const dataAssesment = res.data.data[0].assessment;
-      const foto          = res.data.data[0].foto;
+      const fotoUser          = res.data.data[0].foto;
 
       this.setState({
         showLoader:false,
@@ -81,6 +81,7 @@ class DetailFilter extends Component {
         dataAssesment:dataAssesment,
         nama:namaUser,
         posisi:posisiUser,
+        foto: fotoUser,
       })
 
       //proses pengambilan foto user
@@ -118,6 +119,7 @@ class DetailFilter extends Component {
           <CardItem style={{borderTopLeftRadius: 30, borderTopRightRadius: 30, borderBottomLeftRadius:30, borderBottomRightRadius:30}}>
             <Body style={{justifyContent:'center', alignItems:'center'}}>
               <Text style={{fontSize:18, textAlign:'center', fontWeight:'bold'}}>{item.job_target}</Text>
+              <Text style={{fontSize:14, textAlign:'center'}}>{item.tanggal}</Text>
             </Body>
           </CardItem>
         </Card>
@@ -425,7 +427,7 @@ bodyCarousel() {
             <View>
               <View style={styles.header}>
                 <View style={styles.headerContent}>
-                  <View style={{width:'25%'}}>
+                  <View style={{width:'100%', alignItems:'center', justifyContent:'center'}}>
                     <Image style={styles.avatar} source={{uri: this.state.foto}}/>
                   </View>
 

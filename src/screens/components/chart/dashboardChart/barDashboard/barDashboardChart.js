@@ -23,9 +23,9 @@ class BarChart extends Component {
       data: {
         dataSets: [{
           values: [
-            {y:[20, 35, 45]},             
-            {y:[30, 50, 20]}, 
-            {y:[30, 20, 50]}, 
+            {y:[20, 35, 45]},
+            {y:[30, 50, 20]},
+            {y:[30, 20, 50]},
             {y:[30, 50, 10]},
             {y:[25, 50, 25]},
             {y:[40, 35, 15]},
@@ -44,8 +44,8 @@ class BarChart extends Component {
         }],
       },
       xAxis: {
-        valueFormatter: ['AM', 'LEAD', 'DM', 'AT', 'BAW', 'COL'],        
-        position: 'BOTTOM',
+        valueFormatter: ['AM', 'LEAD', 'DM', 'AT', 'BAW', 'COL'],
+        position: 'TOP',
         gridColor: processColor('white'),
         granularityEnabled: true,
         granularity: 1,
@@ -56,12 +56,12 @@ class BarChart extends Component {
           axisMinimum: 0,
           gridLineWidth: 1,
           gridColor: processColor('white'),
-          enabled: false 
+          enabled: false
         },
         right:{
           gridLineWidth: 1,
           gridColor: processColor('white'),
-          enabled: false 
+          enabled: false
         }
       }
     };
@@ -70,8 +70,8 @@ class BarChart extends Component {
   componentDidMount(){
     setTimeout(() => {
       const {dataChart} = this.props;
-
-      const labelBar = dataChart.map(x => x.abbreviation);
+      console.log(dataChart);
+      const labelBar = dataChart.map(x => x.comp_name);
 
       let dataLength = dataChart.length;
       let dataArray1 = [];
@@ -79,7 +79,7 @@ class BarChart extends Component {
       let strcoba    = null;
       let metcoba    = null;
       let weakcoba   = null;
-      for (i=0; i<dataLength; i++){ 
+      for (i=0; i<dataLength; i++){
 
         strcoba  = dataChart[i].strength;
         metcoba  = dataChart[i].met;
@@ -108,8 +108,8 @@ class BarChart extends Component {
           }],
         },
         xAxis: {
-          valueFormatter: labelBar,        
-          position: 'BOTTOM',
+          valueFormatter: labelBar,
+          position: 'TOP',
           gridColor: processColor('white'),
           granularityEnabled: true,
           granularity: 1,
@@ -117,7 +117,7 @@ class BarChart extends Component {
         },
       })
     }, 2000)
-    
+
   }
 
   render() {

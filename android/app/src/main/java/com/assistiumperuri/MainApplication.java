@@ -4,6 +4,12 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.oblador.vectoricons.VectorIconsPackage;
+import io.invertase.firebase.RNFirebasePackage;
+import com.github.wuxudong.rncharts.MPAndroidChartPackage;
+import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.github.wuxudong.rncharts.MPAndroidChartPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -25,8 +31,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new VectorIconsPackage(),
-            new MPAndroidChartPackage()
+          new MPAndroidChartPackage(),
+          new VectorIconsPackage(),
+          new RNFirebaseNotificationsPackage(),
+          new RNFirebaseMessagingPackage(),
+          new RNFirebasePackage()
       );
     }
 

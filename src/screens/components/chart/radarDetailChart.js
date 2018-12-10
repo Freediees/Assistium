@@ -10,6 +10,8 @@ import {
   FlatList
 } from 'react-native';
 
+import { CardItem } from 'native-base';
+
 import update from 'immutability-helper';
 import {RadarChart} from 'react-native-charts-wrapper';
 
@@ -37,11 +39,12 @@ class RadarChartDetailScreen extends Component {
     if (this.state.dataKompetensi) {
       const dataRating  = this.state.dataKompetensi.map(x => x.rating);
       let   convertData = dataRating.map(v => parseInt(v, 10));
-      const valueDATA   = this.state.dataKompetensi.map(x => x.singkatan);        
+      const valueDATA   = this.state.dataKompetensi.map(x => `${x.comp_name.toString().substr(0, 10)}...`);
+      console.log(this.state.dataKompetensi);
       const countDataRating = dataRating.length - 1;
       const dataDefault = [];
       for (i=0; i<=countDataRating; i++)
-        { 
+        {
           dataDefault[i]= 3;
         }
       this.setState({
@@ -61,21 +64,21 @@ class RadarChartDetailScreen extends Component {
               values: this.state.defaultData,
               label: 'Requirement',
               config: {
-                color: processColor('#95a5a6'),
+                color: processColor('#4286f4'),
 
-                drawFilled: true,
-                fillColor: processColor('#95a5a6'),
+                drawFilled: false,
+                fillColor: processColor('#4286f4'),
                 fillAlpha: 100,
-                lineWidth: 1
+                lineWidth: 2
               }
             }, {
               values: this.state.ratingCoba,
               label: 'Rating',
               config: {
-                color: processColor('#2ecc71'),
+                color: processColor('#e2a82b'),
 
-                drawFilled: true,
-                fillColor: processColor('#2ecc71'),
+                drawFilled: false,
+                fillColor: processColor('#e2a82b'),
                 fillAlpha: 150,
                 lineWidth: 2
               }
@@ -110,8 +113,8 @@ class RadarChartDetailScreen extends Component {
         style={styles.chart}
         data={this.state.data}
         xAxis={this.state.xAxis}
-        legend={this.state.legend}            
-        yAxis={{drawLabels:true, axisMaximum:3, axisMinimum: 1,granularityEnabled: true,
+        legend={this.state.legend}
+        yAxis={{drawLabels:true, axisMaximum:2, axisMinimum: 0,granularityEnabled: true,
           textSize: 14,
           enabled: true}}
         chartDescription={{text: ''}}
@@ -127,6 +130,17 @@ class RadarChartDetailScreen extends Component {
     return (
       <ScrollView stlye={styles.container}>
         {this.renderRadar()}
+
+        <CardItem style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'center'}} >
+          <CardItem >
+            <View style={{ height: 10, width: 10, backgroundColor: '#4286f4', borderRadius: 5 }} />
+            <Text style={{textAlign:'left', color:'#000',margin:3, fontSize: 14}}>Requirement</Text>
+          </CardItem>
+          <CardItem>
+            <View style={{ height: 10, width: 10, backgroundColor: '#e2a82b', borderRadius: 5 }} />
+            <Text style={{textAlign:'left', color:'#000', margin:3, fontSize: 14 }}>Rating</Text>
+          </CardItem>
+        </CardItem>
       </ScrollView>
     );
   }
@@ -139,10 +153,11 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   chart: {
-    marginTop: 10,
-    height: Dimensions.get('window').height / 2,
-    width:300,
-    padding: 20,
+    marginTop: 0,
+    height: Dimensions.get('window').height / 1.5,
+    width:350,
+    padding: -150,
+    marginBottom: -100,
     justifyContent:'center',
     alignItems:'center'
   }

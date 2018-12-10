@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1006577239496",
+    "firebase_url": "https://assistium-external.firebaseio.com",
+    "project_id": "assistium-external",
+    "storage_bucket": "assistium-external.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006577239496:android:18cb917531dd92a7",
+        "android_client_info": {
+          "package_name": "com.assistiumperuri"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006577239496-tnkvv63j7mrkfrh5ahde98p2026r1sa9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.assistiumperuri",
+            "certificate_hash": "810e6b3f716cd902fecf62e3201b4d68243f2b44"
+          }
+        },
+        {
+          "client_id": "1006577239496-puevsv190tqpi358g9u7r0juirn8vq51.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsspOBbCEt6DQTDbhjAAWN6pzc7PL6BHs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006577239496-puevsv190tqpi358g9u7r0juirn8vq51.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

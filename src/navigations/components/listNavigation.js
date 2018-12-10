@@ -17,7 +17,7 @@ import {
 //library
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/Ionicons';
-import {DrawerActions} from 'react-navigation';
+import { DrawerActions } from 'react-navigation';
 import {connect} from 'react-redux';
 import axios from 'axios';
 
@@ -41,26 +41,28 @@ class Menu extends Component {
   }
 
   goDashboard(){
-    setTimeout(() => { 
-      this.props.navigation.navigate('Dashboard')  
-    }, 100); 
-    this.props.navigation.dispatch(DrawerActions.closeDrawer());    
+    setTimeout(() => {
+      this.props.navigation.navigate('Dashboard')
+    }, 100);
+    this.props.navigation.navigate('DrawerClose')
+    //this.props.navigation.dispatch(DrawerActions.closeDrawer());
   }
 
   goProfile(){
-    setTimeout(() => { 
-      this.props.navigation.navigate('Profile')  
-    }, 100); 
-    this.props.navigation.dispatch(DrawerActions.closeDrawer());  
+    setTimeout(() => {
+      this.props.navigation.navigate('About')
+    }, 100);
+    this.props.navigation.navigate('DrawerClose')
+    //this.props.navigation.dispatch(DrawerActions.closeDrawer());
   }
 
   render(){
     const {logout, imageProfile} = this.props;
     return (
-      <View style={styles.container}> 
+      <View style={styles.container}>
         {/* <View style={styles.containerUser}>
           <View style={{justifyContent:'center', alignItemsL:'center', width:'100%'}}>
-            <Image style={styles.avatar} source={{uri: imageProfile}}/>    
+            <Image style={styles.avatar} source={{uri: imageProfile}}/>
           </View>
         </View> */}
 
@@ -74,7 +76,7 @@ class Menu extends Component {
               <Icon name="home" size={16} color="#828282"/>
             </View>
             <View>
-              <Text style={styles.styleMenuItems}>   Home</Text>          
+              <Text style={styles.styleMenuItems}>   Home</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -85,7 +87,7 @@ class Menu extends Component {
               <Icon2 name="md-person" size={17} color="#828282"/>
             </View>
             <View>
-              <Text style={styles.styleMenuItems}>    About Us</Text>          
+              <Text style={styles.styleMenuItems}>    About Us</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -96,7 +98,7 @@ class Menu extends Component {
               <Icon name="logout-variant" size={16} color="#828282"/>
             </View>
             <View>
-              <Text style={styles.styleMenuItems}>   Logout</Text>          
+              <Text style={styles.styleMenuItems}>   Logout</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -150,7 +152,7 @@ const styles = StyleSheet.create({
   },
   styleTitleMenu:{
     color:'#fff',
-    textAlign:'center', 
+    textAlign:'center',
     fontSize:18,
     fontWeight:'bold'
   },

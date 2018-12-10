@@ -73,24 +73,24 @@ class PieChartScreen extends Component {
     const endda = null;
     const expired = 1;
     const jt = null;
-
-    axios.get(`${url.API}/profilerekomendasi/${compdep_id}/${begda}/${endda}/${expired}/${jt}`,{
+    const abc = this.props.data;
+    axios.get(abc || `${url.API}/profilerekomendasi/${compdep_id}/${begda}/${endda}/${expired}/${jt}`,{
       headers: { 'x-Authorization': `bearer ${token}`}
     }).then((res) => {
         console.log(res)
         this.setState({
           //data Strength
-          strengthOrang:res.data.data.RWD.people,
+          strengthOrang:res.data.data.RN.people,
           //data Met
-          metOrang:res.data.data.RN.people,
+          metOrang:res.data.data.RWD.people,
           //data Weakness
           weaknessOrang:res.data.data.NR.people,
 
           data: {
             dataSets: [{
               values: [
-                {value: res.data.data.RWD.persen, label: `${res.data.data.RWD.people} People`},
                 {value: res.data.data.RN.persen, label: `${res.data.data.RN.people} People`},
+                {value: res.data.data.RWD.persen, label: `${res.data.data.RWD.people} People`},
                 {value: res.data.data.NR.persen, label: `${res.data.data.NR.people} People`},
               ],
               label: '',
@@ -164,8 +164,8 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   chart:{
-    height: Dimensions.get('window').height / 2,
-    width:300,
+    height: Dimensions.get('window').height / 3,
+    width:250,
     justifyContent:'center',
     alignItems:'center'
   }

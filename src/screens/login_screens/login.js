@@ -8,7 +8,7 @@ import {
   ImageBackground,
   Image,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 
 //library
@@ -21,21 +21,35 @@ import renderIf from '../components/renderIf';
 
 //configs
 import url from '../../config/api_service';
+const token = '';
 
 class Login extends Component {
+
+
+
   constructor(props){
     super(props);
     this.state = {
       username:'',
       password:'',
-      validationUsername:false,     
-      validationPassword:false,   
+      token:'',
+      validationUsername:false,
+      validationPassword:false,
     }
+  }
+
+  componentWillMount(){
+    var value =  AsyncStorage.getItem('fcmToken');
+    value.then((e)=>{
+      this.setState({
+       token: e,
+      })
+    })
   }
 
   validationForm(){
     const {username, password} = this.state;
-    
+
     if (username === '' && password === '')
       {
         this.setState({
@@ -58,8 +72,8 @@ class Login extends Component {
   }
 
   getLogin(){
-    const {username, password} = this.state;	
-    
+    const {username, password} = this.state;
+
     this.props.dispatch({
       type:'LOGIN',
       payload:axios.post(`${url.API}/token`,{
@@ -68,7 +82,9 @@ class Login extends Component {
       }),
     })
   }
-  
+
+
+
   render() {
     const {statusForm, loaderStatus, messageStatus} = this.props;
     return (
@@ -81,11 +97,23 @@ class Login extends Component {
               position: 'absolute',
               justifyContent:'center'
             }}
-            resizeMode='stretch' 
-            source={require('../../Assets/logo/bg-login-mob.jpg')}          
+            resizeMode='stretch'
+            source={require('../../Assets/logo/bg-login-mob.jpg')}
           >
+
+          <Image
+            resizeMode={'contain'}
+            style={{
+              marginTop: 20,
+              height:100,
+              width:350,
+            }}
+            source={require('../../Assets/logo/logo-aci.png')}
+          />
+
           <Content padder style={{paddingLeft:15, paddingRight:15}}>
-            <KeyboardAvoidingView behavior="padding" style={styles.container}>        
+            <KeyboardAvoidingView behavior="padding" style={styles.container}>
+
               <View style={styles.logoContainer}>
                 <Image
                   resizeMode={'stretch'}
@@ -93,10 +121,10 @@ class Login extends Component {
                     height:70,
                     width:280,
                   }}
-                  source={require('../../Assets/logo/assistium-logo.png')} 
+                  source={require('../../Assets/logo/assistium-logo.png')}
                 />
               </View>
-              <View>  
+              <View>
                 <Form>
                   <Item last error={this.state.validationUsername} style={[styles.inputStyle,{marginTop:10}]}>
                     <Icon name='user' type={'FontAwesome'} style={{color:'#fff'}} />
@@ -109,7 +137,7 @@ class Login extends Component {
                   </Item>
                 </Form>
               </View>
-                
+
               <View>
                 <Button full style={styles.buttonLogin} primary onPress={() => {this.validationForm()}}>
                   {
@@ -129,9 +157,9 @@ class Login extends Component {
                   </Text>
                 </View>
               )}
-            </KeyboardAvoidingView>    
-          </Content> 
-        </ImageBackground>                        
+            </KeyboardAvoidingView>
+          </Content>
+        </ImageBackground>
       </Container>
     );
   }
@@ -152,7 +180,7 @@ const styles = StyleSheet.create({
     flex:1
   },
   container: {
-    marginTop:Platform.OS === 'ios' ? '40%' : 150 
+    marginTop:Platform.OS === 'ios' ? '40%' : 150
   },
   logoContainer:{
     justifyContent:'center',
@@ -161,7 +189,7 @@ const styles = StyleSheet.create({
     flexGrow:1,
   },
   loaderContainer:{
-    alignItems: 'center', 
+    alignItems: 'center',
     justifyContent: 'center'
   },
   inputStyle:{
@@ -174,7 +202,7 @@ const styles = StyleSheet.create({
     borderRadius:5
   },
 
-  //keterangan status 
+  //keterangan status
   containerStatusError:{
     justifyContent:'center',
     alignItems:'center',
