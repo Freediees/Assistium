@@ -35,12 +35,6 @@ export default class App extends Component {
       }
     });
 
-    // const enabled = await firebaase.messaging().hasPermission();
-    // if(enabled){
-    //   this.getToken();
-    // }else{
-    //   this.requestPermission();
-    // }
   }
 
   async getToken(){

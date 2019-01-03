@@ -19,7 +19,6 @@
     "react-native-charts-wrapper": "^0.5.0",
     "react-native-device-info": "^0.24.3",
     "react-native-firebase": "^5.1.1",
-    "react-native-onesignal": "^3.2.11",
     "react-native-simple-radio-button": "^2.7.3",
     "react-native-snap-carousel": "^3.7.5",
     "react-native-swiper": "^1.5.13",
