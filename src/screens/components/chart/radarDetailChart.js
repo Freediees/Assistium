@@ -65,18 +65,17 @@ class RadarChartDetailScreen extends Component {
               label: 'Requirement',
               config: {
                 color: processColor('#4286f4'),
-
-                drawFilled: false,
+                drawFilled: true,
                 fillColor: processColor('#4286f4'),
                 fillAlpha: 100,
-                lineWidth: 2
+                lineWidth: 1,
+                circleColor: processColor('#4286f4')
               }
             }, {
               values: this.state.ratingCoba,
               label: 'Rating',
               config: {
                 color: processColor('#e2a82b'),
-
                 drawFilled: false,
                 fillColor: processColor('#e2a82b'),
                 fillAlpha: 150,
@@ -131,7 +130,7 @@ class RadarChartDetailScreen extends Component {
       <ScrollView stlye={styles.container}>
         {this.renderRadar()}
 
-        <CardItem style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'center'}} >
+        <CardItem style={{ marginTop: -10, height: 30, flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent:'center'}} >
           <CardItem >
             <View style={{ height: 10, width: 10, backgroundColor: '#4286f4', borderRadius: 5 }} />
             <Text style={{textAlign:'left', color:'#000',margin:3, fontSize: 14}}>Requirement</Text>
@@ -153,10 +152,10 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   chart: {
-    marginTop: 0,
+    marginTop: -30,
     height: Dimensions.get('window').height / 1.5,
     width:350,
-    padding: -150,
+    padding: -250,
     marginBottom: -100,
     justifyContent:'center',
     alignItems:'center'

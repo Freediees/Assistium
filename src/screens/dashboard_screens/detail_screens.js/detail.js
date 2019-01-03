@@ -11,7 +11,8 @@ import {
   FlatList,
   AsyncStorage,
   Linking,
-  PermissionsAndroid
+  PermissionsAndroid,
+  BackHandler
 } from 'react-native';
 
 //library
@@ -20,6 +21,7 @@ import  { Container, Header, Content, Form, Item, Input,
   Right, Left, Title, Footer, FooterTab, Fab
 } from 'native-base';
 import {connect} from 'react-redux';
+import RNFetchBlob from 'rn-fetch-blob';
 // import Carousel from 'react-native-looped-carousel';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import axios from 'axios';
@@ -39,6 +41,22 @@ import RadarChartDetailScreen from '../../components/chart/radarDetailChart';
 const { width, height } = Dimensions.get('window');
 const SLIDER_1_FIRST_ITEM = 0;
 
+var statusGranted = 0;
+async function requestCameraPermission() {
+try {
+  const granted = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+  )
+  if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    statusGranted = 1
+  } else {
+    statusGranted = 0
+  }
+} catch (err) {
+  console.warn(err)
+}
+}
+
 class DetailFilter extends Component {
   constructor(props){
     super(props);
@@ -56,11 +74,20 @@ class DetailFilter extends Component {
       dataAssesment:[],
       dataWeakness:[],
       managerial:[],
-      nonManagerial:[]
+      nonManagerial:[],
+      statusFAB: false
     };
   }
 
   componentWillMount(){
+
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      this.goBack(); // works best when the goBack is async
+      return true;
+    });
+
+    requestCameraPermission();
+
     const {token, compdep_id} = this.props;
     const {nik} = this.state;
 
@@ -84,6 +111,13 @@ class DetailFilter extends Component {
         foto: fotoUser,
       })
 
+
+      const url_pdf = this.state.dataAssesment[this.state.slider1ActiveSlide].url_pdf;
+      if(url_pdf !== ''){
+        this.setState({ statusFAB: true });
+      }else{
+        this.setState({ statusFAB: false });
+      }
       //proses pengambilan foto user
       // axios.get(`${foto}`).then((res) => {
       //   const resultImage = res.data.data.foto
@@ -100,12 +134,45 @@ class DetailFilter extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.backHandler.remove();
+  }
 
-
-  getPDF() {
+  downloadPDF() {
     //this.handleDownload();
-    const url_pdf = 'https://apifactory.telkom.co.id:8243/HCM/Assistium/v1/external/getPdf/656103/26/0/ya';
-    Linking.openURL(url_pdf);
+
+    if(statusGranted === 1){
+      const url_pdf = this.state.dataAssesment[this.state.slider1ActiveSlide].url_pdf;
+      //const url_pdf = 'https://apifactory.telkom.co.id:8243/HCM/Assistium/v1/external/getPdf/656103/26/0/ya';
+      // if (url_pdf !== '') {
+      //   Linking.openURL(url_pdf);
+      // }
+      console.log(url_pdf);
+
+      var date      = new Date();
+      var url       = url_pdf;
+      var ext       = '';
+      ext = '.pdf';
+      const { config, fs } = RNFetchBlob
+      let DownloadDir = fs.dirs.DownloadDir
+      let options = {
+        fileCache: true,
+        addAndroidDownloads : {
+          useDownloadManager : true,
+          notification : true,
+          path:  DownloadDir + '/' + Math.floor(date.getTime() + date.getSeconds() / 2)+ext,
+          description : 'Doc'
+        }
+      }
+      config(options).fetch('GET', url).then((res) => {
+        Alert.alert("Success Downloaded");
+      });
+    }else{
+      alert('No Storage Permission');
+    }
+
+
+
   }
 
 
@@ -114,11 +181,12 @@ class DetailFilter extends Component {
   }
 
   _renderHeader ({item, index}) {
+    const realString = item.job_target.slice(0, -5);
     return (
-        <Card style={{borderRadius:30}}>
+        <Card key={item.projpart_id} style={{borderRadius:30}}>
           <CardItem style={{borderTopLeftRadius: 30, borderTopRightRadius: 30, borderBottomLeftRadius:30, borderBottomRightRadius:30}}>
             <Body style={{justifyContent:'center', alignItems:'center'}}>
-              <Text style={{fontSize:18, textAlign:'center', fontWeight:'bold'}}>{item.job_target}</Text>
+              <Text style={{fontSize:18, textAlign:'center', fontWeight:'bold'}}>{realString}</Text>
               <Text style={{fontSize:14, textAlign:'center'}}>{item.tanggal}</Text>
             </Body>
           </CardItem>
@@ -126,6 +194,25 @@ class DetailFilter extends Component {
     );
   }
 
+  cekURL(index){
+    this.setState({ slider1ActiveSlide: index });
+    const url_pdf = this.state.dataAssesment[index].url_pdf;
+
+    console.log(url_pdf);
+    console.log(this.state.statusFAB);
+
+    if(url_pdf !== ''){
+      console.log('masuk true');
+      this.setState({ statusFAB: true });
+      console.log(this.state.statusFAB);
+    }else{
+      console.log('masuk false');
+      this.setState({ statusFAB: false });
+      console.log(this.state.statusFAB);
+    }
+
+
+  }
   headerBP() {
     const { slider1ActiveSlide } = this.state;
 
@@ -146,7 +233,7 @@ class DetailFilter extends Component {
             contentContainerCustomStyle={stylesHeader.sliderContentContainer}
             loop={false}
             autoplay={false}
-            onSnapToItem={(index) => this.setState({ slider1ActiveSlide: index }) }
+            onSnapToItem={(index) => this.cekURL(index) }
           />
           <Pagination
             dotsLength={this.state.dataAssesment.length}
@@ -166,10 +253,9 @@ class DetailFilter extends Component {
 
 
 _renderBodyProfile ({item, index}) {
-
   const dataChart = item.profile_kompetensi
   return (
-    <View style={{marginBottom:10}}>
+    <View key={item.projpart_id} style={{marginBottom:10}}>
       <Card style={{borderRadius:5}}>
         <CardItem style={{borderRadius:5}}>
           <Left>
@@ -182,14 +268,14 @@ _renderBodyProfile ({item, index}) {
           </Left>
         </CardItem>
 
-        <CardItem>
+        <CardItem style={{ padding: 0}}>
           <Body style={{justifyContent:'center', alignItems:'center'}}>
             <RadarChartDetailScreen dataRadar={dataChart}/>
           </Body>
         </CardItem>
       </Card>
 
-      <Card style={{ borderRadius: 5 }} >
+      <Card style={{ borderRadius: 5, marginBottom: 80 }} >
         <CardItem style={{ borderRadius: 5 }}>
         <Left>
           <Text style={[styles.titleKompetensi, { fontWeight: 'bold' }]} >
@@ -232,21 +318,29 @@ _renderBodyProfile ({item, index}) {
             sample1={item.profile_recommendation}
           />
 
-        <CardItem style={{ borderRadius: 5, flex: 1 }}>
-          <Button
-            block
-            rounded
-            info
-            style={{ margin: 10, flex: 1 }}
-            onPress={() => {
-              const urlPdf = `https://apifactory.telkom.co.id:8243/HCM/Assistium/v1/external/getPdf/${item.projpart_id}/26/0/ya`;
-              Linking.openURL(urlPdf);
-              }
-            }
-          >
-            <Text>Download Report</Text>
-          </Button>
-        </CardItem>
+        {
+          // <CardItem style={{ borderRadius: 5, flex: 1 }}>
+          //   <Button
+          //     block
+          //     rounded
+          //     info
+          //     style={{ margin: 10, flex: 1 }}
+          //     onPress={() => {
+          //       const urlPdf = `https://apifactory.telkom.co.id:8243/HCM/Assistium/v1/external/getPdf/${item.projpart_id}/26/0/ya`;
+          //       Linking.openURL(urlPdf);
+          //       }
+          //     }
+          //   >
+          //     <Text>Download Report</Text>
+          //
+          //
+          //
+          //   </Button>
+          // </CardItem>
+        }
+
+
+
       </Card>
 
 
@@ -397,7 +491,22 @@ bodyCarousel() {
     );
 }
 
+  renderFAB(){
+    if(this.state.statusFAB){
+      return(
 
+        <Fab
+          active={true}
+          style={{ borderRadius: 10, backgroundColor: 'red', padding: 0 }}
+          position="bottomRight"
+          onPress={() => this.downloadPDF()}
+        >
+          <Icon name="file-pdf-o" type={'FontAwesome'} />
+        </Fab>
+      );
+    }
+      return <View />;
+  }
 
   render() {
     const header = this.headerBP();
@@ -455,7 +564,11 @@ bodyCarousel() {
             </View>
           </Content>
         </ScrollView>
+
       }
+
+      {this.renderFAB()}
+
       </Container>
     );
   }
@@ -516,7 +629,7 @@ const styles = StyleSheet.create({
     color: "#00CED1"
   },
   bodyContent: {
-    marginTop:100,
+    marginTop:120,
     paddingLeft:10,
     paddingRight:10,
     backgroundColor:'#ecf0f1'

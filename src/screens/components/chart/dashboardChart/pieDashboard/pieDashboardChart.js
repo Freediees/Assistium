@@ -47,7 +47,7 @@ class PieChartScreen extends Component {
             selectionShift: 13,
             valueFormatter: "#.#'%'",
             valueLineColor: processColor('white'),
-            valueLinePart1Length: 0.5
+            valueLinePart1Length: 0.5,
           }
         }],
       },
@@ -77,7 +77,8 @@ class PieChartScreen extends Component {
     axios.get(abc || `${url.API}/profilerekomendasi/${compdep_id}/${begda}/${endda}/${expired}/${jt}`,{
       headers: { 'x-Authorization': `bearer ${token}`}
     }).then((res) => {
-        console.log(res)
+        console.log(res);
+
         this.setState({
           //data Strength
           strengthOrang:res.data.data.RN.people,
@@ -107,6 +108,8 @@ class PieChartScreen extends Component {
             }],
           }
         })
+
+
 
       }).catch((err) => {
         Alert.alert(

@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   FlatList,
   AsyncStorage,
-  ActivityIndicator
+  ActivityIndicator,
+  BackHandler
 } from 'react-native';
 
 //library
@@ -48,6 +49,12 @@ class Search extends Component {
   componentWillMount(){
     const { params } = this.props.navigation.state;
     const {compdep_id, token} = this.props;
+
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      this.goBack(); // works best when the goBack is async
+      return true;
+    });
+
     axios.get(`${params.url}`,{
       headers: { 'x-Authorization': `bearer ${token}` }
     })
@@ -82,6 +89,11 @@ class Search extends Component {
       })
     });
   }
+
+  componentWillUnmount() {
+    this.backHandler.remove();
+  }
+
   goBack(){
     this.props.navigation.goBack();
   }

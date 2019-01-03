@@ -12,7 +12,8 @@ import {
   FlatList,
   AsyncStorage,
   ActivityIndicator,
-  ScrollView
+  ScrollView,
+  BackHandler
 } from 'react-native';
 
 //library
@@ -28,7 +29,7 @@ import {connect} from 'react-redux';
 const radio_props = [
   {label: 'Semua', value: 0 },
   {label: 'Ya', value: 1 },
-  {label: 'Tidak', value: 2},
+  {label: 'Tidak', value: 0},
 ];
 
 const urlApiKompetensi = 'https://apifactory.telkom.co.id:8243/HCM/Assistium/v1/external/profilekompetensi';
@@ -75,20 +76,43 @@ class FilterDashboard extends Component {
 
       console.log(compdep_id);
 
+      this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        this.goBack(); // works best when the goBack is async
+        return true;
+      });
+
+
       axios.get(`https://apifactory.telkom.co.id:8243/HCM/Assistium/v1/external/getjt/${compdep_id}`, {
         headers: { 'x-authorization': `bearer ${token}` }
       })
       .then((res) => {
         console.log(res.data.data);
         taskArray = res.data.data;
+
         this.setState({
             tasks: taskArray,
             dataSource: this.state.dataSource.cloneWithRows(taskArray)
-        })
+        });
+
+        for (var i = 0; i < this.state.tasks.length; i++) {
+          var newTasks = this.state.tasks;
+          newTasks[i].isChecked = !newTasks[i].isChecked;
+          // //
+          // // // the list is updated with the new task array
+          var newDataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1.Id != r2.Id });
+          // //
+          this.setState({
+              tasks: newTasks,
+              dataSource: newDataSource.cloneWithRows(newTasks)
+          });
+        }
+
       })
       .catch((error) => {
         console.log(error)
       });
+
+
 
     // AsyncStorage.getItem(TOKEN_KEY).then(res => {
     //   const token = res;
@@ -104,6 +128,9 @@ class FilterDashboard extends Component {
     this.props.navigation.goBack();
   }
 
+  componentWillUnmount() {
+    this.backHandler.remove();
+  }
 
   findTaskIndex(taskId) {
       let { tasks } = this.state;
@@ -132,13 +159,14 @@ class FilterDashboard extends Component {
       });
 
       console.log('Index of this task is ', foundIndex);
+      //console.log(this.state.tasks);
   }
 
   renderRow(rowData, sectionId, rowId) {
       return (
           <ListItem>
               <View style={{opacity: this.state.editModeOpacity, width: this.state.width}}>
-                  <CheckBox checked={rowData.isChecked || true} onPress={() => this.toggleCheckForTask(rowData.jobtarget_id)} />
+                  <CheckBox checked={rowData.isChecked} onPress={() => this.toggleCheckForTask(rowData.jobtarget_id)} />
               </View>
               <Body>
                   <View>
@@ -192,7 +220,6 @@ class FilterDashboard extends Component {
 
   setDateEnd(newDate) {
     const date = format(newDate, 'YYYY-MM-DD').toString();
-    console.log(date);
     this.setState({ filterEndda: date });
   }
 
@@ -201,12 +228,12 @@ class FilterDashboard extends Component {
     var a = '';
     let { tasks } = this.state;
     for (var i = 0; i < tasks.length; i++) {
-      if(i === 0){
-        if (tasks[i].isChecked !== true) {
+      if(a === ''){
+        if (tasks[i].isChecked === true) {
             a = a + tasks[i].jobtarget_id;
         }
       }else{
-        if (tasks[i].isChecked !== true) {
+        if (tasks[i].isChecked === true) {
             a = a + '.' + tasks[i].jobtarget_id;
         }
       }
@@ -214,7 +241,6 @@ class FilterDashboard extends Component {
 
     const urlKompetensi = `${urlApiKompetensi}/${compdep_id}/${this.state.filterBegda}/${this.state.filterEndda}/${this.state.filterExpired}/${a || null}`;
     const urlRekomendasi= `${urlApiRekomendasi}/${compdep_id}/${this.state.filterBegda}/${this.state.filterEndda}/${this.state.filterExpired}/${a || null}`;
-
 
     this.props.navigation.navigate('DashboardSearch', { urlKompetensi: urlKompetensi, urlRekomendasi: urlRekomendasi });
   }
@@ -339,7 +365,10 @@ class FilterDashboard extends Component {
                 buttonSize={10}
                 labelStyle={{marginHorizontal: 40}}
                 animation={true}
-                onPress={(value) => {this.setState({filterExpired: value})}}
+                onPress={(value) => {
+                  this.setState({filterExpired: value})
+                  console.log(value);
+                }}
               />
               </View>
 

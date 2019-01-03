@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   FlatList,
   AsyncStorage,
-  ActivityIndicator
+  ActivityIndicator,
+  BackHandler
 } from 'react-native';
 
 //library
@@ -43,6 +44,19 @@ class Search extends Component {
     };
   }
 
+  componentWillMount(){
+
+      this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        this.goBack(); // works best when the goBack is async
+        return true;
+      });
+
+  }
+
+  componentWillUnmount() {
+    this.backHandler.remove();
+  }
+  
   goBack(){
     this.props.navigation.goBack();
   }

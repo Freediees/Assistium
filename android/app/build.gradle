@@ -137,6 +137,9 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-onesignal')
+    compile project(':react-native-device-info')
+    compile project(':rn-fetch-blob')
     compile project(':react-native-vector-icons')
     compile project(':react-native-firebase')
     compile project(':react-native-charts-wrapper')
@@ -158,4 +161,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'

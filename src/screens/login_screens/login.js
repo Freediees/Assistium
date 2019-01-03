@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 //library
+import DeviceInfo from 'react-native-device-info';
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Icon, Toast} from 'native-base';
 import axios from 'axios';
 import { connect } from "react-redux";
@@ -22,6 +23,7 @@ import renderIf from '../components/renderIf';
 //configs
 import url from '../../config/api_service';
 const token = '';
+const uniqueId = DeviceInfo.getUniqueID();
 
 class Login extends Component {
 
@@ -45,6 +47,8 @@ class Login extends Component {
        token: e,
       })
     })
+
+
   }
 
   validationForm(){
@@ -72,13 +76,14 @@ class Login extends Component {
   }
 
   getLogin(){
-    const {username, password} = this.state;
+    const {username, password, token} = this.state;
 
     this.props.dispatch({
       type:'LOGIN',
       payload:axios.post(`${url.API}/token`,{
         username: username,
         password: password,
+        imei: uniqueId,
       }),
     })
   }
@@ -86,6 +91,7 @@ class Login extends Component {
 
 
   render() {
+    console.log( uniqueId );
     const {statusForm, loaderStatus, messageStatus} = this.props;
     return (
       <Container style={styles.containerNativeBase}>

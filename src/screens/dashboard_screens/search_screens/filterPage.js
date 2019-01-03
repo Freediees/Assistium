@@ -13,6 +13,7 @@ import {
   AsyncStorage,
   ActivityIndicator,
   ScrollView,
+  BackHandler
 } from 'react-native';
 
 //library
@@ -28,7 +29,7 @@ import {connect} from 'react-redux';
 const radio_props = [
   {label: 'Semua', value: 0 },
   {label: 'Ya', value: 1 },
-  {label: 'Tidak', value: 2},
+  {label: 'Tidak', value: 0},
 ];
 
 const urlApi = 'https://apifactory.telkom.co.id:8243/HCM/Assistium/v1/external/search';
@@ -79,6 +80,11 @@ class FilterInSearch extends Component {
 
       console.log(compdep_id);
 
+      this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        this.goBack(); // works best when the goBack is async
+        return true;
+      });
+
       axios.get(`https://apifactory.telkom.co.id:8243/HCM/Assistium/v1/external/getjt/${compdep_id}`, {
         headers: { 'x-authorization': `bearer ${token}` }
       })
@@ -90,10 +96,28 @@ class FilterInSearch extends Component {
             tasks: taskArray,
             dataSource: this.state.dataSource.cloneWithRows(taskArray)
         })
+
+        for (var i = 0; i < this.state.tasks.length; i++) {
+          var newTasks = this.state.tasks;
+          newTasks[i].isChecked = !newTasks[i].isChecked;
+          // //
+          // // // the list is updated with the new task array
+          var newDataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1.Id != r2.Id });
+          // //
+          this.setState({
+              tasks: newTasks,
+              dataSource: newDataSource.cloneWithRows(newTasks)
+          });
+        }
+
       })
       .catch((error) => {
         console.log(error)
       });
+
+
+
+      console.log(this.state.tasks);
 
     // AsyncStorage.getItem(TOKEN_KEY).then(res => {
     //   const token = res;
@@ -109,7 +133,9 @@ class FilterInSearch extends Component {
     this.props.navigation.goBack();
   }
 
-
+  componentWillUnmount() {
+    this.backHandler.remove();
+  }
 
   findTaskIndex(taskId) {
       let { tasks } = this.state;
@@ -144,7 +170,7 @@ class FilterInSearch extends Component {
       return (
           <ListItem>
               <View style={{opacity: this.state.editModeOpacity, width: this.state.width}}>
-                  <CheckBox checked={rowData.isChecked || true} onPress={() => this.toggleCheckForTask(rowData.jobtarget_id)} />
+                  <CheckBox checked={rowData.isChecked} onPress={() => this.toggleCheckForTask(rowData.jobtarget_id)} />
               </View>
               <Body>
                   <View>
@@ -210,12 +236,12 @@ class FilterInSearch extends Component {
     var a = '';
     let { tasks } = this.state;
     for (var i = 0; i < tasks.length; i++) {
-      if(i === 0){
-        if (tasks[i].isChecked !== true) {
+      if(a === ''){
+        if (tasks[i].isChecked === true) {
             a = a + tasks[i].jobtarget_id;
         }
       }else{
-        if (tasks[i].isChecked !== true) {
+        if (tasks[i].isChecked === true) {
             a = a + '.' + tasks[i].jobtarget_id;
         }
       }
@@ -223,7 +249,6 @@ class FilterInSearch extends Component {
 
     const urlSearch = `${urlApi}/${compdep_id}/${a || null}/${this.state.filterBegda}/${this.state.filterEndda}/${this.state.filterExpired}/${this.state.filterKey || 'axzc'}/${this.state.filterLimit}/${this.state.filterOffset}`;
     console.log(urlSearch);
-
     this.props.navigation.navigate('FilterSearch', {url: urlSearch});
   }
 
@@ -236,7 +261,7 @@ class FilterInSearch extends Component {
     return(
 
       <ListItem key={item.jobtarget_id}>
-        <CheckBox checked={true} onPress={()=> this.toggleCheckForTask(item.jobtarget_id)}/>
+        <CheckBox checked={item.isChecked} onPress={()=> this.toggleCheckForTask(item.jobtarget_id)}/>
         <Body>
           <Text>{item.jobtarget_name}</Text>
         </Body>
@@ -363,7 +388,10 @@ class FilterInSearch extends Component {
                 buttonSize={10}
                 labelStyle={{marginHorizontal: 40}}
                 animation={true}
-                onPress={(value) => {this.setState({filterExpired: value})}}
+                onPress={(value) => {
+                  this.setState({filterExpired: value})
+                  console.log(value);
+                }}
               />
               </View>
 

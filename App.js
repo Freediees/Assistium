@@ -1,120 +1,229 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import firebase from 'react-native-firebase';
+import OneSignal from 'react-native-onesignal';
 import {
     Container, Header, Title, Content, Text,
     Button, Icon, Left, Right, Body, Badge,
-    List, ListItem, CheckBox
+    List, ListItem, CheckBox, AsyncStorage
 } from 'native-base';
 import { View, ListView } from 'react-native';
 
-
-var taskArray = [{label: 'Semua', value: 0 },
-{label: 'Ya', value: 1 },
-{label: 'Tidak', value: 2},];
-
-
 class App extends React.Component {
 
-    constructor(props) {
-       super(props);
+  constructor(properties) {
+    super(properties);
+    OneSignal.init('f004d3ec-6a4a-48b9-bd1b-e9786823d2de');
 
-       var dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1.Id != r2.Id });
-       this.state = {
-           tasks: taskArray,
-           dataSource: dataSource.cloneWithRows(taskArray),
-           isLoading: true
-       }
-   }
+    OneSignal.addEventListener('received', this.onReceived);
+    OneSignal.addEventListener('opened', this.onOpened);
+    OneSignal.addEventListener('ids', this.onIds);
+  }
+
+  componentWillUnmount() {
+    OneSignal.removeEventListener('received', this.onReceived);
+    OneSignal.removeEventListener('opened', this.onOpened);
+    OneSignal.removeEventListener('ids', this.onIds);
+  }
+
+  onReceived(notification) {
+    console.log("Notification received: ", notification);
+  }
+
+  onOpened(openResult) {
+    console.log('Message: ', openResult.notification.payload.body);
+    console.log('Data: ', openResult.notification.payload.additionalData);
+    console.log('isActive: ', openResult.notification.isAppInFocus);
+    console.log('openResult: ', openResult);
+  }
+
+  onIds(device) {
+    console.log('Device info: ', device);
+  }
 
 
-    findTaskIndex(taskId) {
-        let { tasks } = this.state;
-        for (var i = 0; i < tasks.length; i++) {
-            if (tasks[i].value === taskId) {
-                return i;
-            }
-        }
+  async componentWillMount(){
+    //firebase.messaging().subscribeToTopic("assistiumperuri");
+    //this.checkPermission();
+    //this.createNotificationListeners();
+  }
 
-        return -1;
+  componentWillUnmount() {
+    //this.notificationListener();
+    //this.notificationOpenedListener();
+  }
+
+
+  async checkPermission(){
+    firebase.messaging().hasPermission()
+    .then(enabled => {
+      if (enabled) {
+          console.log('Permission Granted');
+          this.getToken();
+      } else {
+          console.log('Permission Request');
+        this.requestPermission();
+      }
+    });
+
+  }
+
+
+  async getToken(){
+    let fcmToken = await AsyncStorage.getItem('fcmToken');
+    console.log('before fcmtoken :', fcmToken);
+    if(!fcmToken){
+      fcmToken = await firebase.messaging().getToken();
+      console.log('after fcmtoken :', fcmToken);
+      if(fcmToken){
+        await AsyncStorage.setItem( 'fcmToken', fcmToken);
+      }
+    }
+  }
+
+  showAlert(title, body) {
+    Alert.alert(
+      title, body,
+      [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ],
+      { cancelable: false },
+    );
+  }
+
+  async createNotificationListeners() {
+
+
+
+      this.notificationDisplayedListener = firebase.notifications().onNotificationDisplayed((notification: Notification) => {
+          console.log('oke1');
+
+          const channel = new firebase.notifications.Android.Channel('vtrz', 'vtrChannel', firebase.notifications.Android.Importance.High)
+            .setDescription('vtrChannel');
+
+          firebase.notifications().android.createChannel(channel);
+
+          const abc = new firebase.notifications.Notification()
+          .setNotificationId('fcmNotification.data.notificacionId')
+          .setTitle('abc')
+          .setBody('abc');
+
+
+          console.log(channel.channelId);
+          abc
+          .android.setChannelId(channel.channelId)
+          .android.setBigPicture('https://nomortelepon.id/wp-content/uploads/2016/10/telkom-indonesia.jpg')
+          .android.setLargeIcon('https://nomortelepon.id/wp-content/uploads/2016/10/telkom-indonesia.jpg')
+          .android.setColor('red');
+
+      });
+      this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
+          // Process your notification as required
+          console.log('oke2');
+          const channel = new firebase.notifications.Android.Channel('vtrz', 'vtrChannel', firebase.notifications.Android.Importance.High)
+            .setDescription('vtrChannel');
+
+          firebase.notifications().android.createChannel(channel);
+
+          const abc = new firebase.notifications.Notification()
+          .setNotificationId('fcmNotification.data.notificacionId')
+          .setTitle('abc')
+          .setBody('abc');
+
+
+          console.log(channel.channelId);
+          abc
+          .android.setChannelId(channel.channelId)
+          .android.setBigPicture('https://nomortelepon.id/wp-content/uploads/2016/10/telkom-indonesia.jpg')
+          .android.setLargeIcon('https://nomortelepon.id/wp-content/uploads/2016/10/telkom-indonesia.jpg')
+          .android.setColor('red');
+
+          firebase.notifications().displayNotification(abc);
+      });
+
+
+
+      /*
+      * Triggered when a particular notification has been received in foreground
+      * */
+      this.notificationListener = firebase.notifications().onNotification((notification) => {
+          console.log(notification);
+          const { title, body } = notification;
+
+          // const channel = new firebase.notifications.Android.Channel('vtrz', 'vtrChannel', firebase.notifications.Android.Importance.High)
+          //   .setDescription('vtrChannel');
+          //
+          // firebase.notifications().android.createChannel(channel);
+          //
+          // const abc = new firebase.notifications.Notification()
+          // .setNotificationId('fcmNotification.data.notificacionId')
+          // .setTitle(title)
+          // .setBody(body);
+          //
+          //
+          // console.log(channel.channelId);
+          // abc
+          // .android.setChannelId(channel.channelId)
+          // .android.setBigPicture('https://nomortelepon.id/wp-content/uploads/2016/10/telkom-indonesia.jpg')
+          // .android.setLargeIcon('https://nomortelepon.id/wp-content/uploads/2016/10/telkom-indonesia.jpg')
+          // .android.setColor('red');
+          //
+          // firebase.notifications().displayNotification(abc);
+          //this.showAlert(title, body);
+      });
+
+
+
+
+
+      /*
+      * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
+      * */
+      this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+          const { title, body } = notificationOpen.notification;
+          //this.showAlert(title, body);
+          console.log(notificationOpen.notification);
+
+
+      });
+
+      /*
+      * If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:
+      * */
+      const notificationOpen = await firebase.notifications().getInitialNotification();
+      if (notificationOpen) {
+          const { title, body } = notificationOpen.notification;
+          console.log(notificationOpen.notification);
+          //this.showAlert(title, body);
+      }
+      /*
+      * Triggered for data only payload in foreground
+      * */
+      this.messageListener = firebase.messaging().onMessage((message) => {
+        //process data message
+        console.log(JSON.stringify(message));
+      });
     }
 
-    findTaskIndex(taskId) {
-        let { tasks } = this.state;
-        for (var i = 0; i < tasks.length; i++) {
-            if (tasks[i].value == taskId) {
-                return i;
-            }
-        }
 
-        return -1;
-    }
 
-    toggleCheckForTask(taskId) {
-        var foundIndex = this.findTaskIndex(taskId);
 
-        // the ischecked value will be set for that task in the tasks array
-         var newTasks = this.state.tasks;
-        newTasks[foundIndex].isChecked = !newTasks[foundIndex].isChecked;
-        //
-        // // the list is updated with the new task array
-        var newDataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1.Id != r2.Id });
-        //
-        this.setState({
-            tasks: newTasks,
-            dataSource: newDataSource.cloneWithRows(newTasks)
-        });
 
-        console.log('Index of this task is ', foundIndex);
-    }
-
-    renderRow(rowData, sectionId, rowId) {
-      console.log(rowData.label);
-        return (
-            <ListItem>
-                <View style={{opacity: this.state.editModeOpacity, width: this.state.width}}>
-                    <CheckBox checked={rowData.isChecked} onPress={() => this.toggleCheckForTask(rowData.value)} />
-                </View>
-                <Body>
-                    <View>
-                        <Text>{rowData.label}</Text>
-                    </View>
-                </Body>
-            </ListItem>
-        );
+  async requestPermission(){
+    firebase.messaging().requestPermission()
+      .then(() => {
+        // User has authorised
+        this.getToken();
+      })
+      .catch(error => {
+        // User has rejected permissions
+        console.log('permission Rejected');
+      });
     }
 
     render() {
-
-      console.log(this.state.tasks);
-      let currentView = <View />;
-        if (this.state.isLoading) {
-            currentView = <View />;
-        } else {
-          currentView = <ListView
-             dataSource={this.state.dataSource} renderRow={this.renderRow.bind(this)}
-             enableEmptySections={true}
-         />;
-        }
-
         return (
-            <Container>
-                <Header>
-                    <Left>
-                        </Left>
-                    <Body>
-                        <Title>My tasks</Title>
-                    </Body>
-                    <Right>
-                        <Button onPress={() => this.toggleEditMode()} transparent><Text>Edit</Text></Button>
-                    </Right>
-                </Header>
-                <Content>
-                  <ListView
-                     dataSource={this.state.dataSource} renderRow={this.renderRow.bind(this)}
-                     enableEmptySections={true}
-                 />
-                </Content>
-            </Container>
+            <View />
         );
     }
 }

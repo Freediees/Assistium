@@ -9,7 +9,8 @@ import {
   ImageBackground,
   ScrollView,
   ActivityIndicator,
-  FlatList
+  FlatList,
+  BackHandler
 } from 'react-native';
 
 //library
@@ -20,8 +21,26 @@ import  { Container, Header, Content, Form, Item, Input,
 
 class About extends Component {
 
+  componentWillMount(){
+
+      this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        this.goBack(); // works best when the goBack is async
+        return true;
+      });
+
+  }
+
   goSearchPage() {
     this.props.navigation.navigate('Search');
+  }
+
+
+  componentWillUnmount() {
+    this.backHandler.remove();
+  }
+
+  goBack(){
+    this.props.navigation.goBack();
   }
 
 
